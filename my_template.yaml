@@ -25,7 +25,7 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/$(Build.SourceBranchName)'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/$(${variables['Build.SourceBranchName']})'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - template: build.yaml
       parameters:
         dependsOn: 'Test semgrep'
