@@ -1,0 +1,20 @@
+parameters:
+  - name: dependsOn
+    type: string
+  - name: environmentName
+    type: string
+  - name: deployBranch
+    type: string
+
+stages:
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch}}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_${{ parameters.environmentName }}
+      dependsOn: ${{parameters.dependsOn}}
+      jobs:
+        - job: Build_${{ parameters.environmentName }}
+          displayName: Build for ${{ parameters.environmentName }}
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: echo "building the ${{ parameters.environmentName }} files"
+              displayName: building the ${{ parameters.environmentName }} files
