@@ -27,7 +27,7 @@ stages:
 
   - template: build.yaml
     parameters:
-      dependsOn: Test
+      dependsOn: [ Test, semgrep ]
         # - Test
         # - semgrep
       environmentName: ${{ variables['Build.SourceBranchName'] }}
