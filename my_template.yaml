@@ -89,7 +89,7 @@ stages:
           steps:
              - script: |
                 echo "deploy to $(DEPLOY_DEV)"
-              displayName: 'deploy to dev'
+               displayName: 'deploy to dev'
 
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/integration'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_Test
@@ -134,7 +134,7 @@ stages:
           steps:
              - script: |
                 echo "deploy to $(DEPLOY_TEST)"
-              displayName: 'deploy to test'
+               displayName: 'deploy to test'
 
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_Prod
@@ -179,4 +179,4 @@ stages:
           steps:
              - script: |
                 echo "deploy to $(DEPLOY_PROD)"
-              displayName: 'deploy to prod'
+               displayName: 'deploy to prod'
