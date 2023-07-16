@@ -1,12 +1,15 @@
-pool: AWS-agents
 
 jobs:
   - job: RunBashScript
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       - script: |
           echo "Kubernetes is an open-source container orchestration system for automating software deployment, scaling, and management"
 
   - job: RunTerraform
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       - script: |
           echo "terraform running"
