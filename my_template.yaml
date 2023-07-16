@@ -25,23 +25,24 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
-  - template: build.yaml
-    parameters:
-      dependsOn: 'Test semgrep'
-      environmentName: ${{ variables['Build.SourceBranchName'] }}
-      deployBranch: ${{ variables['Build.SourceBranchName'] }}
-
-  - template: trivy.yaml
-    parameters:
-      dependsOn: build.yaml
-      environmentName: ${{ variables['Build.SourceBranchName'] }}
-      deployBranch: ${{ variables['Build.SourceBranchName'] }}
-      
-  - template: deploy.yaml
-    parameters:
-      dependsOn: 'build.yaml trivy.yaml'
-      environmentName: ${{ variables['Build.SourceBranchName'] }}
-      deployBranch: ${{ variables['Build.SourceBranchName'] }}
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/Build.SourceBranchName'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - template: build.yaml
+      parameters:
+        dependsOn: 'Test semgrep'
+        environmentName: ${{ variables['Build.SourceBranchName'] }}
+        # deployBranch: ${{ variables['Build.SourceBranchName'] }}
+  
+    - template: trivy.yaml
+      parameters:
+        dependsOn: build.yaml
+        environmentName: ${{ variables['Build.SourceBranchName'] }}
+        # deployBranch: ${{ variables['Build.SourceBranchName'] }}
+        
+    - template: deploy.yaml
+      parameters:
+        dependsOn: 'build.yaml trivy.yaml'
+        environmentName: ${{ variables['Build.SourceBranchName'] }}
+        # deployBranch: ${{ variables['Build.SourceBranchName'] }}
 
 
 
