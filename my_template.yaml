@@ -1,15 +1,21 @@
+# Repo: Contoso/BuildTemplates
+# File: common.yml
+parameters:
+- name: 'vmImage'
+  default: 'ubuntu-latest'
+  type: string
 
 jobs:
   - job: RunBashScript
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: ${{ parameters.vmImage }}
     steps:
       - script: |
           echo "Kubernetes is an open-source container orchestration system for automating software deployment, scaling, and management"
 
   - job: RunTerraform
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: ${{ parameters.vmImage }}
     steps:
       - script: |
           echo "terraform running"
