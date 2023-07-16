@@ -6,16 +6,9 @@ parameters:
   type: string
 
 jobs:
-  - job: RunBashScript
-    pool:
-      vmImage: ${{ parameters.vmImage }}
-    steps:
-      - script: |
-          echo "Kubernetes is an open-source container orchestration system for automating software deployment, scaling, and management"
-
-  - job: RunTerraform
-    pool:
-      vmImage: ${{ parameters.vmImage }}
-    steps:
-      - script: |
-          echo "terraform running"
+- job: Build
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  - script: echo "npm install"
+  - script: echo "npm test"
