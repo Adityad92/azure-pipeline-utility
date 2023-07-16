@@ -14,10 +14,10 @@
 #   - script: echo "npm test"
 
 
-variables:
-- group: dxfarm-variable-group
-- name: vmImageName
-  value: 'AWS-agents'
+# variables:
+# - group: dxfarm-variable-group
+# - name: vmImageName
+#   value: 'AWS-agents'
 
 
 stages:
