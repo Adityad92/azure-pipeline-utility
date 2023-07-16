@@ -4,7 +4,7 @@ parameters:
     default: $[ variables['Build.SourceBranchName'] ]
 
 stages:
-  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  # - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Test
       displayName: Test stage
       jobs:
