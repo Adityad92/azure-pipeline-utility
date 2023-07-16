@@ -1,14 +1,182 @@
 # Repo: Contoso/BuildTemplates
 # File: common.yml
-parameters:
-- name: 'vmImage'
-  default: 'ubuntu-latest'
-  type: string
+# parameters:
+# - name: 'vmImage'
+#   default: 'ubuntu-latest'
+#   type: string
 
-jobs:
-- job: Build
-  pool:
-    vmImage: ${{ parameters.vmImage }}
-  steps:
-  - script: echo "npm install"
-  - script: echo "npm test"
+# jobs:
+# - job: Build
+#   pool:
+#     vmImage: ${{ parameters.vmImage }}
+#   steps:
+#   - script: echo "npm install"
+#   - script: echo "npm test"
+
+
+variables:
+- group: dxfarm-variable-group
+- name: vmImageName
+  value: 'AWS-agents'
+
+
+stages:
+  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Test
+      displayName: Test stage
+      jobs:
+        - job: Test
+          displayName: Node.js tests
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(TEST) stage"
+              displayName: Run Node.js tests
+
+    - stage: semgrep
+      displayName: semgrep-sast
+      jobs:
+        - job: semgrep
+          displayName: semgrep-sast
+          continueOnError: true
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(SEMGREP)"
+              displayName: 'Semgrep security scan'
+
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_Dev
+      displayName: Build for Dev
+      dependsOn:
+        - Test
+        - semgrep
+      jobs:
+        - job: Build_Dev
+          displayName: Build for Dev
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: echo "building the $(BUILD_DEV) files"
+              displayName: building the dev files
+
+    - stage: TrivyScan
+      displayName: TrivyScan
+      dependsOn: Build_Dev
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          continueOnError: true
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(TRIVY_DEV)"
+              displayName: 'Download and install Trivy'
+
+    - stage: Deploy_Dev
+      displayName: Deploy to Dev
+      dependsOn:
+        - TrivyScan
+        - Build_Dev
+      jobs:
+        - job: Deploy
+          displayName: Deploy to Dev
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+             - script: |
+                echo "deploy to $(DEPLOY_DEV)"
+              displayName: 'deploy to dev'
+
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/integration'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_Test
+      displayName: Build for Test
+      dependsOn:
+        - Test
+        - semgrep
+      jobs:
+        - job: Build_Test
+          displayName: Build for Test
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: echo "building the $(BUILD_TEST) files"
+              displayName: building the test files
+
+
+    - stage: TrivyScan
+      displayName: TrivyScan
+      dependsOn: Build_Test
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          continueOnError: true
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(TRIVY_TEST)"
+              displayName: 'Download and install Trivy'
+
+    - stage: Deploy_Test
+      displayName: Deploy to Test
+      dependsOn:
+        - TrivyScan
+        - Build_Test
+      jobs:
+        - job: Deploy
+          displayName: Deploy to Test
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+             - script: |
+                echo "deploy to $(DEPLOY_TEST)"
+              displayName: 'deploy to test'
+
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_Prod
+      displayName: Build for Prod
+      dependsOn:
+        - Test
+        - semgrep
+      jobs:
+        - job: Build
+          displayName: Build for Prod
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: echo "building the $(BUILD_PROD) files"
+              displayName: building the prod files
+
+
+    - stage: TrivyScan
+      displayName: TrivyScan
+      dependsOn: Build_Prod
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          continueOnError: true
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(TRIVY_PROD)"
+              displayName: 'Download and install Trivy'
+
+    - stage: Deploy_Prod
+      displayName: Deploy to Prod
+      dependsOn:
+        - TrivyScan
+        - Build_Prod
+      jobs:
+        - job: Deploy
+          displayName: Deploy to Prod
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+             - script: |
+                echo "deploy to $(DEPLOY_PROD)"
+              displayName: 'deploy to prod'
