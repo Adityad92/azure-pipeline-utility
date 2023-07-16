@@ -7,7 +7,7 @@ parameters:
     type: string
 
 stages:
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_${{ parameters.environmentName }}
       dependsOn: ${{parameters.dependsOn }}
       jobs:
