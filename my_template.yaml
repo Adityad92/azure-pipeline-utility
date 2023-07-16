@@ -1,7 +1,7 @@
 parameters:
   - name: deployBranch
     type: string
-    default: ${{ variables['Build.SourceBranchName'] }}
+    default: $[ variables['Build.SourceBranchName'] ]
 
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
