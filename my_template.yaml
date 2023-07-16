@@ -1,0 +1,14 @@
+trigger: none
+
+pool: AWS-agents
+
+jobs:
+  - job: RunBashScript
+    steps:
+      - script: |
+          echo "Kubernetes is an open-source container orchestration system for automating software deployment, scaling, and management"
+
+  - job: RunTerraform
+    steps:
+      - script: |
+          echo "terraform running"
