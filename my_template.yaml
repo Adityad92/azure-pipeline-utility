@@ -1,3 +1,8 @@
+parameters:
+  - name: deployBranch
+    type: string
+    default: ${{ variables['Build.SourceBranchName'] }}
+
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Test
@@ -25,7 +30,7 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ variables['Build.SourceBranchName'] }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - template: build.yaml
       parameters:
         dependsOn: 'Test semgrep'
