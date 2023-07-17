@@ -61,7 +61,7 @@ stages:
         - Test
         - semgrep
       jobs:
-        - job: Build_${{ parameters.environmentName }}
+        - job: Build_dev
           displayName: Build for ${{ parameters.environmentName }}
           pool:
             vmImage: $(vmImageName)
@@ -87,7 +87,7 @@ stages:
                 echo "This is $(TRIVY_${{ parameters.deployBranch}})"
               displayName: 'Download and install Trivy'
 
-    - stage: Deploy_${{ parameters.environmentName }}
+    - stage: Deploy_dev
       condition: |
         and(
           eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
@@ -97,7 +97,7 @@ stages:
         - Build_dev
         - TrivyScan
       jobs:
-        - job: Deploy_${{ parameters.environmentName }}
+        - job: Deploy_dev
           displayName: Deploy for ${{ parameters.environmentName }}
           pool:
             vmImage: $(vmImageName)
