@@ -40,7 +40,7 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/',variables['Build.SourceBranch']), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/variables['Build.SourceBranch']'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_${{ parameters.environmentName }}
       dependsOn:
         - Test
