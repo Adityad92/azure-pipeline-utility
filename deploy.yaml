@@ -13,8 +13,8 @@ stages:
       jobs:
         - job: Deploy_${{ parameters.environmentName }}
           displayName: Deploy for ${{ parameters.environmentName }}
-          pool:
-            vmImage: $(vmImageName)
+          # pool:
+          #   vmImage: $(vmImageName)
           steps:
             - script: echo "deploying the ${{ parameters.environmentName }} files"
               displayName: deploying the ${{ parameters.environmentName }} files
