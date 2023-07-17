@@ -6,10 +6,10 @@
 parameters:
   - name: environmentName
     type: string
-    default: $[ variables['Build.SourceBranchName'] ]
+    default: variables['Build.SourceBranchName']
   - name: deployBranch
     type: string
-    default: $[ variables['Build.SourceBranchName'] ]
+    default: variables['Build.SourceBranchName']
 
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
@@ -22,8 +22,8 @@ stages:
             vmImage: $(vmImageName)
           steps:
             - script: |
-                echo "displaying $(deployBranch)"
-                echo "$(environmentName)"
+                echo "displaying ${{ parameters.deployBranch }}"
+                echo "${{ parameters.environmentName }}"
                 echo "This is $(TEST) stage"
               displayName: Run Node.js tests
   
