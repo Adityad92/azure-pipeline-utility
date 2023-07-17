@@ -12,14 +12,14 @@ parameters:
     default: $[ variables['Build.SourceBranchName'] ]
 
 stages:
-  # - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Test
       displayName: Test stage
-      condition: |
-        or(
-          eq(variables['Build.Reason'], 'IndividualCI'),
-          eq(variables['Build.Reason'], 'PullRequest')
-        )   
+      # condition: |
+      #   or(
+      #     eq(variables['Build.Reason'], 'IndividualCI'),
+      #     eq(variables['Build.Reason'], 'PullRequest')
+      #   )   
       jobs:
         - job: Test
           displayName: Node.js tests
@@ -34,11 +34,11 @@ stages:
   
     - stage: semgrep
       displayName: semgrep-sast
-      condition: |
-        or(
-          eq(variables['Build.Reason'], 'IndividualCI'),
-          eq(variables['Build.Reason'], 'PullRequest')
-        ) 
+      # condition: |
+      #   or(
+      #     eq(variables['Build.Reason'], 'IndividualCI'),
+      #     eq(variables['Build.Reason'], 'PullRequest')
+      #   ) 
       jobs:
         - job: semgrep
           displayName: semgrep-sast
@@ -50,18 +50,18 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
-  # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/variables['Build.SourceBranch']'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-    - stage: Build_dev
-      condition: |
-        and(
-          eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
-          ne(variables['Build.Reason'], 'PullRequest')
-        )
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_${{ parameters.environmentName }}
+      # condition: |
+      #   and(
+      #     eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
+      #     ne(variables['Build.Reason'], 'PullRequest')
+      #   )
       dependsOn:
         - Test
         - semgrep
       jobs:
-        - job: Build_dev
+        - job: Build_${{ parameters.environmentName }}
           displayName: Build for ${{ parameters.environmentName }}
           pool:
             vmImage: $(vmImageName)
@@ -70,12 +70,12 @@ stages:
               displayName: building the ${{ parameters.environmentName }} files
 
     - stage: TrivyScan
-      condition: |
-        and(
-          eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
-          ne(variables['Build.Reason'], 'PullRequest')
-        )
-      dependsOn: Build_dev
+      # condition: |
+      #   and(
+      #     eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
+      #     ne(variables['Build.Reason'], 'PullRequest')
+      #   )
+      dependsOn: Build_${{ parameters.environmentName }}
       jobs:
         - job: InstallTrivy
           displayName: 'Install Trivy'
@@ -87,17 +87,17 @@ stages:
                 echo "This is $(TRIVY_${{ parameters.deployBranch}})"
               displayName: 'Download and install Trivy'
 
-    - stage: Deploy_dev
-      condition: |
-        and(
-          eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
-          ne(variables['Build.Reason'], 'PullRequest')
-        )
+    - stage: Deploy_${{ parameters.environmentName }}
+      # condition: |
+      #   and(
+      #     eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
+      #     ne(variables['Build.Reason'], 'PullRequest')
+      #   )
       dependsOn:
-        - Build_dev
+        - Build_${{ parameters.environmentName }}
         - TrivyScan
       jobs:
-        - job: Deploy_dev
+        - job: Deploy_${{ parameters.environmentName }}
           displayName: Deploy for ${{ parameters.environmentName }}
           pool:
             vmImage: $(vmImageName)
