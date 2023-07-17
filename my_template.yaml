@@ -51,7 +51,7 @@ stages:
               displayName: 'Semgrep security scan'
 
   # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/variables['Build.SourceBranch']'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-    - stage: Build_${{ parameters.environmentName }}
+    - stage: Build_dev
       condition: |
         and(
           eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
@@ -75,7 +75,7 @@ stages:
           eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
           ne(variables['Build.Reason'], 'PullRequest')
         )
-      dependsOn: Build_${{ parameters.environmentName }}
+      dependsOn: Build_dev
       jobs:
         - job: InstallTrivy
           displayName: 'Install Trivy'
@@ -94,7 +94,7 @@ stages:
           ne(variables['Build.Reason'], 'PullRequest')
         )
       dependsOn:
-        - Build_${{ parameters.environmentName }}
+        - Build_dev
         - TrivyScan
       jobs:
         - job: Deploy_${{ parameters.environmentName }}
