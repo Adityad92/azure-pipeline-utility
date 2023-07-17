@@ -18,5 +18,4 @@ stages:
             vmImage: $(vmImageName)
           steps:
             - script: |
-                echo "This is $(TRIVY_${{ parameters.deployBranch}})"
               displayName: 'Download and install Trivy'
