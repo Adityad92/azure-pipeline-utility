@@ -12,9 +12,12 @@ parameters:
     default: $[ variables['Build.SourceBranchName'] ]
 
 stages:
-  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  # - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Test
       displayName: Test stage
+      condition: |
+        eq(variables['Build.Reason'], 'IndividualCI') 
+        or eq(variables['Build.Reason'], 'PullRequest')
       jobs:
         - job: Test
           displayName: Node.js tests
@@ -29,6 +32,9 @@ stages:
   
     - stage: semgrep
       displayName: semgrep-sast
+      condition: |
+      eq(variables['Build.Reason'], 'IndividualCI') 
+      or eq(variables['Build.Reason'], 'PullRequest')
       jobs:
         - job: semgrep
           displayName: semgrep-sast
@@ -40,8 +46,13 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/variables['Build.SourceBranch']'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/variables['Build.SourceBranch']'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_${{ parameters.environmentName }}
+      condition: |
+        and(
+          eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
+          ne(variables['Build.Reason'], 'PullRequest')
+        )
       dependsOn:
         - Test
         - semgrep
@@ -55,6 +66,11 @@ stages:
               displayName: building the ${{ parameters.environmentName }} files
 
     - stage: TrivyScan
+      condition: |
+        and(
+          eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
+          ne(variables['Build.Reason'], 'PullRequest')
+        )
       dependsOn: Build_${{ parameters.environmentName }}
       jobs:
         - job: InstallTrivy
@@ -68,6 +84,11 @@ stages:
               displayName: 'Download and install Trivy'
 
     - stage: Deploy_${{ parameters.environmentName }}
+      condition: |
+        and(
+          eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'),
+          ne(variables['Build.Reason'], 'PullRequest')
+        )
       dependsOn:
         - Build_${{ parameters.environmentName }}
         - TrivyScan
