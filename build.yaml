@@ -1,6 +1,8 @@
 parameters:
+  # - name: dependsOn
+  #   type: string
   - name: dependsOn
-    type: string
+    type: object
   - name: environmentName
     type: string
   # - name: deployBranch
