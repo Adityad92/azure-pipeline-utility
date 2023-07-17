@@ -106,23 +106,23 @@ stages:
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - template: build.yaml
       parameters:
-        dependsOn:
-          - 'Test'
-          - 'semgrep'
+        dependsOn: Test
+          # - 'Test'
+          # - 'semgrep'
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
   
     - template: trivy.yaml
       parameters:
-        dependsOn: 'build.yaml'
+        dependsOn: build.yaml
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
         
     - template: deploy.yaml
       parameters:
-        dependsOn:
-          - 'build.yaml'
-          - 'trivy.yaml'
+        dependsOn: build.yaml
+          # - 'build.yaml'
+          # - 'trivy.yaml'
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
 
