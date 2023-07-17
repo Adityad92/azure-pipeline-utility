@@ -33,8 +33,8 @@ stages:
     - stage: semgrep
       displayName: semgrep-sast
       condition: |
-      eq(variables['Build.Reason'], 'IndividualCI') 
-      or eq(variables['Build.Reason'], 'PullRequest')
+        eq(variables['Build.Reason'], 'IndividualCI') 
+        or eq(variables['Build.Reason'], 'PullRequest')
       jobs:
         - job: semgrep
           displayName: semgrep-sast
