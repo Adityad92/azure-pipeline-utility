@@ -22,6 +22,8 @@ stages:
             vmImage: $(vmImageName)
           steps:
             - script: |
+                echo "displaying ${{ parameters.deployBranch }}"
+                echo "${{ parameters.environmentName }}"
                 echo "This is $(TEST) stage"
               displayName: Run Node.js tests
   
