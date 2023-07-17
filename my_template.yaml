@@ -118,7 +118,7 @@ stages:
         
     - template: deploy.yaml
       parameters:
-        dependsOn: ['Build_${{ parameters.environmentName }}', 'TrivyScan']
+        dependsOn: ['TrivyScan']
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
 
