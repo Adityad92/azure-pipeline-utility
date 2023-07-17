@@ -3,8 +3,16 @@
 #     type: string
 #     default: $[ variables['Build.SourceBranchName'] ]
 
+parameters:
+  - name: environmentName
+    type: string
+    default: ${{ variables['Build.SourceBranchName'] }}
+  - name: deployBranch
+    type: string
+    default: ${{ variables['Build.SourceBranchName'] }}
+
 stages:
-  # - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Test
       displayName: Test stage
       jobs:
@@ -30,24 +38,64 @@ stages:
                 echo "This is $(SEMGREP)"
               displayName: 'Semgrep security scan'
 
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_${{ parameters.environmentName }}
+      dependsOn:
+        - Test
+        - semgrep
+      jobs:
+        - job: Build_${{ parameters.environmentName }}
+          displayName: Build for ${{ parameters.environmentName }}
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: echo "building the ${{ parameters.environmentName }} files"
+              displayName: building the ${{ parameters.environmentName }} files
+
+    - stage: TrivyScan
+      dependsOn: Build_${{ parameters.environmentName }}
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          continueOnError: true
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(TRIVY_${{ parameters.deployBranch}})"
+              displayName: 'Download and install Trivy'
+
+    - stage: Deploy_${{ parameters.environmentName }}
+      dependsOn:
+        - Build_${{ parameters.environmentName }}
+        - TrivyScan
+      jobs:
+        - job: Deploy_${{ parameters.environmentName }}
+          displayName: Deploy for ${{ parameters.environmentName }}
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: echo "deploying the ${{ parameters.environmentName }} files"
+              displayName: deploying the ${{ parameters.environmentName }} files
+
   # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-    - template: build.yaml
-      parameters:
-        dependsOn: 'Test semgrep'
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-        deployBranch: ${{ variables['Build.SourceBranchName'] }}
+    # - template: build.yaml
+    #   parameters:
+    #     dependsOn: 'Test semgrep'
+    #     environmentName: ${{ variables['Build.SourceBranchName'] }}
+    #     deployBranch: ${{ variables['Build.SourceBranchName'] }}
   
-    - template: trivy.yaml
-      parameters:
-        dependsOn: build.yaml
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-        deployBranch: ${{ variables['Build.SourceBranchName'] }}
+    # - template: trivy.yaml
+    #   parameters:
+    #     dependsOn: build.yaml
+    #     environmentName: ${{ variables['Build.SourceBranchName'] }}
+    #     deployBranch: ${{ variables['Build.SourceBranchName'] }}
         
-    - template: deploy.yaml
-      parameters:
-        dependsOn: 'build.yaml trivy.yaml'
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-        deployBranch: ${{ variables['Build.SourceBranchName'] }}
+    # - template: deploy.yaml
+    #   parameters:
+    #     dependsOn: 'build.yaml trivy.yaml'
+    #     environmentName: ${{ variables['Build.SourceBranchName'] }}
+    #     deployBranch: ${{ variables['Build.SourceBranchName'] }}
 
 
 
