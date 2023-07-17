@@ -14,8 +14,8 @@ stages:
         - job: InstallTrivy
           displayName: 'Install Trivy'
           continueOnError: true
-          pool:
-            vmImage: $(vmImageName)
+          # pool:
+          #   vmImage: $(vmImageName)
           steps:
             - script: |
               displayName: 'Download and install Trivy'
