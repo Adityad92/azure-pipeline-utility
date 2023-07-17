@@ -3,13 +3,17 @@
 #     type: string
 #     default: $[ variables['Build.SourceBranchName'] ]
 
+variables:
+  environmentName: $[ variables['Build.SourceBranchName'] ]
+  deployBranch: $[ variables['Build.SourceBranchName'] ]
+
 parameters:
   - name: environmentName
     type: string
-    default: variables['Build.SourceBranchName']
+    default: ${{ variables.environmentName }}
   - name: deployBranch
     type: string
-    default: variables['Build.SourceBranchName']
+    default: ${{ variables.deployBranch }}
 
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
