@@ -23,8 +23,8 @@ stages:
       jobs:
         - job: Test
           displayName: Node.js tests
-          pool:
-            vmImage: $(vmImageName)
+          # pool:
+          #   vmImage: $(vmImageName)
           steps:
             - script: |
                 echo "This is $(TEST) stage"
@@ -41,8 +41,8 @@ stages:
         - job: semgrep
           displayName: semgrep-sast
           continueOnError: true
-          pool:
-            vmImage: $(vmImageName)
+          # pool:
+          #   vmImage: $(vmImageName)
           steps:
             - script: |
                 echo "This is $(SEMGREP)"
@@ -106,53 +106,26 @@ stages:
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - template: build.yaml
       parameters:
-        dependsOn: 'Test semgrep'
+        dependsOn:
+          - 'Test'
+          - 'semgrep'
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
   
     - template: trivy.yaml
       parameters:
-        dependsOn: build.yaml
+        dependsOn: 'build.yaml'
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
         
     - template: deploy.yaml
       parameters:
-        dependsOn: 'build.yaml trivy.yaml'
+        dependsOn:
+          - 'build.yaml'
+          - 'trivy.yaml'
         environmentName: ${{ variables['Build.SourceBranchName'] }}
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/integration'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-    - template: build.yaml
-      parameters:
-        dependsOn: 'Test semgrep'
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-  
-    - template: trivy.yaml
-      parameters:
-        dependsOn: build.yaml
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-        
-    - template: deploy.yaml
-      parameters:
-        dependsOn: 'build.yaml trivy.yaml'
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-    - template: build.yaml
-      parameters:
-        dependsOn: 'Test semgrep'
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-  
-    - template: trivy.yaml
-      parameters:
-        dependsOn: build.yaml
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
-        
-    - template: deploy.yaml
-      parameters:
-        dependsOn: 'build.yaml trivy.yaml'
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
 
 
 # Repo: Contoso/BuildTemplates
