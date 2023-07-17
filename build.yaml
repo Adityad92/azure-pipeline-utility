@@ -13,8 +13,8 @@ stages:
       jobs:
         - job: Build_${{ parameters.environmentName }}
           displayName: Build for ${{ parameters.environmentName }}
-          pool:
-            vmImage: $(vmImageName)
+          # pool:
+          #   vmImage: $(vmImageName)
           steps:
             - script: echo "building the ${{ parameters.environmentName }} files"
               displayName: building the ${{ parameters.environmentName }} files
