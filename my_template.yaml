@@ -27,18 +27,18 @@ stages:
                 echo "This is $(TEST) stage"
               displayName: Run Node.js tests
   
-    # - stage: semgrep
-    #   displayName: semgrep-sast
-    #   jobs:
-    #     - job: semgrep
-    #       displayName: semgrep-sast
-    #       continueOnError: true
-    #       pool:
-    #         vmImage: $(vmImageName)
-    #       steps:
-    #         - script: |
-    #             echo "This is $(SEMGREP)"
-    #           displayName: 'Semgrep security scan'
+    - stage: semgrep
+      displayName: semgrep-sast
+      jobs:
+        - job: semgrep
+          displayName: semgrep-sast
+          continueOnError: true
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "This is $(SEMGREP)"
+              displayName: 'Semgrep security scan'
 
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch }}'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_${{ parameters.environmentName }}
