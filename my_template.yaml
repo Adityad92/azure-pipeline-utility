@@ -107,19 +107,19 @@ stages:
     - template: build.yaml
       parameters:
         dependsOn: ['Test', 'semgrep']
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
+        environmentName: 'dev'
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
   
     - template: trivy.yaml
       parameters:
         dependsOn: ['Build_${{ parameters.environmentName }}']
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
+        environmentName: 'dev'
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
         
     - template: deploy.yaml
       parameters:
         dependsOn: ['TrivyScan']
-        environmentName: ${{ variables['Build.SourceBranchName'] }}
+        environmentName: 'dev'
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
 
 
