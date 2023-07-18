@@ -18,5 +18,14 @@ stages:
           # pool:
           #   vmImage: $(vmImageName)
           steps:
-            - script: echo "building the ${{ parameters.environmentName }} files"
+            - script: |
+                echo "image pull secret is ${{ parameters.environmentName }} files"
+                echo "image repo is ${{ parameters.environmentName }} files"
+                echo "docker file path is ${{ parameters.environmentName }} files"
+                echo "docker registry sc is ${{ parameters.environmentName }} files"
+                echo "tag is ${{ parameters.environmentName }} files"
+                echo "trivy version is ${{ parameters.environmentName }} files"
+                echo "container registry is ${{ parameters.environmentName }} files"
+                echo "kubernetes name space is ${{ parameters.environmentName }} files"
+                echo "kubernetes sc endpoint is ${{ parameters.environmentName }} files"
               displayName: building the ${{ parameters.environmentName }} files
