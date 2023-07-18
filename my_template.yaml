@@ -11,6 +11,12 @@
 #     type: string
 #     default: $[ variables['Build.SourceBranchName'] ]
 
+parameters:
+  branchName: ''
+  environmentMappings:
+    develop: 'Dev'
+    integration: 'Stage'
+    main: 'Prod'
 
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
@@ -114,7 +120,7 @@ stages:
   
     - template: trivy.yaml
       parameters:
-        dependsOn: ['Build_dev']
+        dependsOn: ['Build_${{ parameters.environmentMappings[parameters.branchName] }}']
         environmentName: 'Dev'
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
         
