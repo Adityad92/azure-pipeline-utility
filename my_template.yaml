@@ -114,7 +114,7 @@ stages:
   
     - template: trivy.yaml
       parameters:
-        dependsOn: ['Build_${{ parameters.environmentName }}']
+        dependsOn: ['Build_Dev']
         environmentName: 'Dev'
         # deployBranch: ${{ variables['Build.SourceBranchName'] }}
         
