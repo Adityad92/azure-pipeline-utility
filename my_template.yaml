@@ -11,6 +11,7 @@
 #     type: string
 #     default: $[ variables['Build.SourceBranchName'] ]
 
+
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Test
@@ -28,6 +29,7 @@ stages:
           steps:
             - script: |
                 echo "This is $(TEST) stage"
+                echo " ${{ parameters.environmentName }} "
               displayName: Run Node.js tests
   
     - stage: semgrep
