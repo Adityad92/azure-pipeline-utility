@@ -11,6 +11,13 @@
 #     type: string
 #     default: $[ variables['Build.SourceBranchName'] ]
 
+trigger:
+  branches:
+    include:
+      - develop
+      - integration
+      - main
+      - feature-*
 
 stages:
   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
