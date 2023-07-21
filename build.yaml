@@ -18,7 +18,9 @@ stages:
           # pool:
           #   vmImage: $(vmImageName)
           steps:
-            - script: echo //npm.pkg.github.com/:_authToken >> .npmrc
+            - script: |
+                echo //npm.pkg.github.com/:_authToken >> .npmrc
+                ls -la
               displayName: Add npmrc
             - script: |
                 echo "image pull secret is $(imagePullSecretDev)"
